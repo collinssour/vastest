@@ -74,6 +74,7 @@
 }
 
 #signInButton {
+	font-size: 100px;
 	color: yellow;
 	margin-top: 20px;
 	margin-bottom: 20px;
