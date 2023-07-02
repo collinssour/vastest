@@ -1,1 +1,3 @@
-SELECT * FROM USERS LIMIT 5;
+
+
+SELECT * from users;

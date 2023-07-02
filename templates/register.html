@@ -1,18 +1,106 @@
 <html>
 <head>
 <title>Registration</title>
-<link rel="stylesheet" href='/static/css/main.css' />
-<script type="text/javascript" src="{{ url_for('static', filename = 'js/validateForm.js') }}">
+<link rel="stylesheet" href='/static/css/all.css' />
+<script type="text/javascript" src="{{ url_for('static', filename = 'js/validateForm.js') }}"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script>
+
+    function enableBtn() {
+        document.getElementById("reg").disabled = true;
+    }
+
+    function myFunction(element, color) {
+        var x = document.getElementById("phone").value;
+        var len = document.getElementById('phone').value.length;
+        if (x != '' && len == 10){
+            $.ajax(
+                {
+                    type:'POST',
+                    contentType:'application/json;charset-utf-08',
+                    dataType:'json',
+                    url:'http://127.0.0.1:5000/pass_val?value='+x,
+                    success:function (data) {
+                        var reply=data.reply;
+                        if (reply=="success")
+                        {
+                            return;
+                        }
+                        else
+                            {
+                            alert("some error ocured in session agent")
+                            }
+
+                    }
+
+                }
+            );
+            
+            alert('OTP Is send To Your Mobile Number');
+            element.style.color = color;
+        }
+        else{
+            alert('Please Enter Valied Mobile Number');
+            element.style.color = 'red';
+ 
+        } 
+    } 
+
+    function VerifyOTP(element, color) {
+        document.querySelector("#reg").disabled = false;
+        var x = document.getElementById("otp").value;
+        var len = document.getElementById('otp').value.length;
+        if (x != '' && len == 6){
+            $.ajax(
+                {
+                    type:'POST',
+                    contentType:'application/json;charset-utf-08',
+                    dataType:'json',
+                    url:'http://127.0.0.1:5000/otp_val?value='+x,
+                    success:function (data) {
+                        var reply=data.reply;
+                        if (reply=="success")
+                        {
+                            document.querySelector("#reg").disabled = false;
+                            return;
+                        }
+                        if(reply=="failed"){
+                            document.querySelector("#reg").disabled = true;
+                            alert("*******Please Enter Valid OTP******")
+                        }
+                        else
+                            {
+                            return;
+                            }
+
+                    }
+
+                }
+            );
+            
+            element.style.color = color;
+        }
+        else{
+            document.querySelector("#reg").disabled = true;
+            alert('Please Enter Valied OTP');
+            element.style.color = 'red';
+ 
+        } 
+    } 
+    
+
 </script>
 </head>
-<body>
-<form action="/register" method="POST" onsubmit="return validate()">
-    <p>Email: <input type="email" name="email"></p>
-
+<body onload="enableBtn()">
+   <p> {{error}} </p>
+   <form action="/register" method="POST" onsubmit="return validate()" class="modal-content animate">
+    <div class="container">
+    <h2 style = "color: forestgreen;margin-left: 35%;" >Registration Form</h2>    
+    <p>Ref Code : <input type="text" name="code" ></p>
+    <p>User Code : <input type="text" name="ucode" ></p>
+    <p>Email: <input type="text" name="email" id="email"></p>
     <P>Password: <input type="password" name="password" id="password" required></p>
-
     <p>Confirm Password: <input type="password" name="cpassword" id="cpassword"></p>
-
     <p>First Name: <input type="text" name="firstName"></p>
     <p>Last Name: <input type="text" name="lastName"></p>
     <p>Address Line 1: <input type="text" name="address1"></p>
@@ -21,11 +109,12 @@
     <p>City: <input type="text" name="city"></p>
     <p>State: <input type="text" name="state"></p>
     <p>Country: <input type="text" name="country"></p>
-    <p>Phone Number: <input type="text" name="phone"></p>
-
-    <p><input type="submit" value="Register"></p>
-
-    <a href="/loginForm">Login here</a>
+    <p>Phone Number: <input type="text" name="phone" id="phone" required ><input type="button" name="generate" onclick= "myFunction(this, 'Green')" value="Gen OTP"></p>
+    <p>Enter OTP:<input type="text" name="otp" id="otp" required><input type="button" name="verify" value="Verify" onclick= "VerifyOTP(this, 'Green')"></p>
+    <P><input type="submit" id="reg" value="REGISTER"></P>
+    Already User <a href="/loginForm">Login here</a>
+    </div>
+    
 </form>
 </body>
 </html>

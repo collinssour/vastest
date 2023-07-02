@@ -1,6 +1,9 @@
 from flask import *
 import sqlite3, hashlib, os
 from werkzeug.utils import secure_filename
+import random as r
+from twilio.rest import Client
+
 
 app = Flask(__name__)
 app.secret_key = 'random string'
@@ -34,7 +37,7 @@ def root():
         cur.execute('SELECT categoryId, name FROM categories')
         categoryData = cur.fetchall()
     itemData = parse(itemData)   
-    return render_template('home.html', itemData=itemData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
+    return render_template('index.html', itemData=itemData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
 
 @app.route("/add")
 def admin():
@@ -183,7 +186,22 @@ def updateProfile():
                     con.rollback()
                     msg = "Error occured"
         con.close()
-        return redirect(url_for('editProfile'))
+        return render_template("profileHome.html")
+    
+@app.route("/account/profile/view")
+def viewProfile():
+    if 'email' not in session:
+        return redirect(url_for('root'))
+    loggedIn, firstName, noOfItems = getLoginDetails()
+    with sqlite3.connect('db.db') as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE email = ?", (session['email'], ))
+        profileData = cur.fetchone()
+    conn.close()
+    print('----------------',profileData)
+    return render_template("profile.html", profileData=profileData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
+
+
 
 @app.route("/loginForm")
 def loginForm():
@@ -302,11 +320,15 @@ def register():
         state = request.form['state']
         country = request.form['country']
         phone = request.form['phone']
+        code = request.form['code']
+        ucode = request.form['ucode']
+
+
 
         with sqlite3.connect('db.db') as con:
             try:
                 cur = con.cursor()
-                cur.execute('INSERT INTO users (password, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (hashlib.md5(password.encode()).hexdigest(), email, firstName, lastName, address1, address2, zipcode, city, state, country, phone))
+                cur.execute('INSERT INTO users (password, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (hashlib.md5(password.encode()).hexdigest(), email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode))
 
                 con.commit()
 
@@ -315,11 +337,15 @@ def register():
                 con.rollback()
                 msg = "Error occured"
         con.close()
-        return render_template("login.html", error=msg)
+        return redirect(url_for('/loginForm'))
 
 @app.route("/registerationForm")
 def registrationForm():
     return render_template("register.html")
+
+@app.route("/details")
+def details():
+    return render_template("detail.html")
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -337,6 +363,60 @@ def parse(data):
             i += 1
         ans.append(curr)
     return ans
+
+
+@app.route('/pass_val',methods = ['POST', 'GET'])
+def pass_val():
+    global mobile
+    mobile =request.args.get('value')
+    print('name',mobile)
+    otpgen(mobile)
+    return jsonify({'reply':'success'})
+
+
+otp = '0';
+
+def otpgen(mobile):
+    global otp
+    for i in range(5):
+        print(i, end=", ")
+        otp +=  str(r.randint(1,9))
+    send_sms(mobile,otp)
+    return otp
+
+
+def send_sms(mobile,otp):
+    account_sid = 'AC77140ee2d91748224da609a3a61a6dc8'
+    auth_token = '650f5f821ee7a9d982aded37b3382645'
+
+    twilio_number = '14066238105'
+    target_number = '91'+mobile
+
+    print('--------------target number ******** -------',target_number)
+    print('--------------otp value ******** -------',otp) 
+
+    
+
+    # client = Client(account_sid, auth_token)
+
+    # message = client.messages.create(
+    #                           from_= twilio_number,
+    #                           body = 'One Time Password For Registration' +otp,
+    #                           to = target_number
+    #                       ) 
+    # print(message.sid)
+
+@app.route('/otp_val',methods = ['POST', 'GET'])
+def otp_val():
+    global ootp
+    ootp =request.args.get('value')
+    print('name',ootp)
+    print('--------',otp)
+    if(otp == ootp):
+        return jsonify({'reply':'success'})
+    else:
+        return jsonify({'reply':'failed'})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

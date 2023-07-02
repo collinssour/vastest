@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Profile </title>
+<link rel="stylesheet" href='/static/css/main.css' />
+</head>
+<body>
+<div id="title">
+	<a href="/">
+		<img id="logo" src= {{ url_for('static', filename='images/logo.png') }} />aaa
+	</a>
+	<form>
+		<input id="searchBox" type="text" name="searchQuery">
+		<input id="searchButton" type="submit" value="Search">
+	</form>
+
+	{% if not loggedIn %}
+	<div id="signInButton">
+		<a class="link" href="/loginForm">Sign In</a>
+	</div>
+	{% else %}
+	<div class="dropdown">
+		<button class="dropbtn">Hello, <br>{{firstName}}</button>
+		<div class="dropdown-content">
+			<a href="/account/orders">Your orders</a>
+			<a href="/account/profile">Your profile</a>
+			<hr>
+			<a href="/logout">Sign Out</a>
+		</div>
+	</div>
+	{% endif %}
+	<div id="kart">
+		<a class="link" href="/cart">
+			<img src={{url_for('static', filename='images/shoppingCart.png')}} id="cartIcon" />
+			CART {{noOfItems}}
+		</a>
+	</div>
+</div>
+
+<div class="display">
+	<h2> profile</h2>
+	<form action="" method="GET">
+		<p>Email: {{profileData[2]}}</p>
+		<p>First Name: {{profileData[3]}}</p>
+		<p>Last Name:{{profileData[4]}}</p>
+		<p>Address 1: {{profileData[5]}}</p>
+		<p>Address 2: {{profileData[6]}}</p>
+		<p>Zip Code: {{profileData[7]}}</p>
+		<p>City:{{profileData[8]}}</p>
+		<p>State:{{profileData[9]}}</p>
+		<p>Country:{{profileData[10]}}</p>
+		<p>Phone Number:{{profileData[11]}}</p>
+	</form>
+</div>
+</body>
+</html>
+

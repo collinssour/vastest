@@ -16,7 +16,9 @@ conn.execute('''CREATE TABLE users
 		city TEXT,
 		state TEXT,
 		country TEXT, 
-		phone TEXT
+		phone TEXT,
+        code TEXT,
+        ucode TEXT
 		)''')
 
 conn.execute('''CREATE TABLE products
