@@ -52,7 +52,7 @@
 		   <div class="header_section_top">
 			  <div class="row">
 				   <div class="col-sm-12">
-					   <div> <h2 style="color: aliceblue;text-align: center;"> PRODUCT DATA </h2></div>
+					   <div> <h2 style="color: aliceblue;text-align: center;"> USERS DATA </h2></div>
 				   </div>
 				   </div>
 			   </div>
@@ -79,32 +79,45 @@
       <table class="table table-hover table-bordered">
 	   <thead class="thead-dark">
 	   <tr id="userdata">
-		{{data}}
-		   <th>PID</th>
-		   <th>PNAME</th>
-		   <th>PRICE</th>
-		   <th>DESC</th>
-		   <th>IMAGE</th>
-		   <th>QTY</th>
+		   <th>UID</th>
+		   <th>E-MAIL</th>
+		   <th>F NAME</th>
+		   <th>L NAME</th>
+		   <th>ADD L1</th>
+		   <th>ADD L2</th>
+		   <th>PIN CODE</th>
+		   <th>CITY</th>
+		   <th>STATE</th>
+		   <th>COUNTRY</th>
+		   <th>MOBILE</th>
+		   <th>RCODE</th>
+		   <th>UCODE</th>
 		   <th>Actions</th>
-
-
 	   </tr>
 	   </thead>
 	   <tbody>
 	   {% for itemData in data %}
 	   <tr id="userdata1">
 		   <td>{{itemData[0]}}</td>
-		   <td>{{itemData[1]}}</td>
 		   <td>{{itemData[2]}}</td>
 		   <td>{{itemData[3]}}</td>
-		   <td style="width: 40%;"><img style ="height: 50%;width: 40%;" src={{ url_for('static', filename='uploads/' + itemData[4]) }} id="itemImage" /></td>
+		   <td>{{itemData[4]}}</td>
 		   <td>{{itemData[5]}}</td>
-		   <td><span class="badge badge-light"><a href ="/removeItem?productId={{itemData[0]}}">Delete Product</a></span> </td>
+		   <td>{{itemData[6]}}</td>
+		   <td>{{itemData[7]}}</td>
+		   <td>{{itemData[8]}}</td>
+		   <td>{{itemData[9]}}</td>
+		   <td>{{itemData[10]}}</td>
+		   <td>{{itemData[11]}}</td>
+		   <td>{{itemData[12]}}</td>
+		   <td>{{itemData[13]}}</td>
+		   <td><span class="badge badge-light"><a href ="/removeUsr?userId={{itemData[0]}}">Delete User</a></span> </td>
 	   </tr>
 	   {% endfor %}                     
 	   </tbody>
    </table>
-
+    </div>
+	<div class="col-sm-1"></div>
+</div>
 </body>
 </html>

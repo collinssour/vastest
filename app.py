@@ -18,6 +18,7 @@ def getLoginDetails():
             loggedIn = False
             firstName = ''
             noOfItems = 0
+            userId = 0
         else:
             loggedIn = True
             cur.execute("SELECT userId, firstName FROM users WHERE email = ?", (session['email'], ))
@@ -25,11 +26,11 @@ def getLoginDetails():
             cur.execute("SELECT count(productId) FROM kart WHERE userId = ?", (userId, ))
             noOfItems = cur.fetchone()[0]
     conn.close()
-    return (loggedIn, firstName, noOfItems)
+    return (loggedIn, firstName, noOfItems, userId)
 
 @app.route("/")
 def root():
-    loggedIn, firstName, noOfItems = getLoginDetails()
+    loggedIn, firstName, noOfItems, userId = getLoginDetails()
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
         cur.execute('SELECT productId, name, price, description, image, stock FROM products')
@@ -37,7 +38,7 @@ def root():
         cur.execute('SELECT categoryId, name FROM categories')
         categoryData = cur.fetchall()
     itemData = parse(itemData)   
-    return render_template('index.html', itemData=itemData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
+    return render_template('index.html', itemData=itemData,userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
 
 @app.route("/add")
 def admin():
@@ -74,7 +75,7 @@ def addItem():
                 conn.rollback()
         conn.close()
         print(msg)
-        return redirect(url_for('root'))
+        return redirect(url_for('dashboard'))
 
 @app.route("/remove")
 def remove():
@@ -99,11 +100,67 @@ def removeItem():
             msg = "Error occured"
     conn.close()
     print(msg)
-    return redirect(url_for('root'))
+    return redirect(url_for('dashboard'))
+
+@app.route("/removeCat")
+def removeCat():
+    with sqlite3.connect('db.db') as conn:
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM categories')
+        data = cur.fetchall()
+    conn.close()
+    return render_template('removecategory.html', data=data)
+
+
+@app.route("/removeCategory")
+def removeCategory():
+    categoryId = request.args.get('categoryId')
+    with sqlite3.connect('db.db') as conn:
+        try:
+            cur = conn.cursor()
+            cur.execute('DELETE FROM categories WHERE categoryId = ?', (categoryId, ))
+            conn.commit()
+            msg = "Deleted successsfully"
+        except:
+            conn.rollback()
+            msg = "Error occured"
+    conn.close()
+    print(msg)
+    return redirect(url_for('dashboard'))
+
+# removing the user
+@app.route("/removeUser")
+def removeUser():
+    with sqlite3.connect('db.db') as conn:
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM users')
+        data = cur.fetchall()
+    conn.close()
+    return render_template('removeuser.html', data=data)
+
+
+@app.route("/removeUsr")
+def removeUsr():
+    userId = request.args.get('userId')
+    with sqlite3.connect('db.db') as conn:
+        try:
+            cur = conn.cursor()
+            cur.execute('DELETE FROM users WHERE userId = ?', (userId, ))
+            conn.commit()
+            msg = "Deleted successsfully"
+        except:
+            conn.rollback()
+            msg = "Error occured"
+    conn.close()
+    print(msg)
+    return redirect(url_for('dashboard'))
+
+
+
 
 @app.route("/displayCategory")
 def displayCategory():
-        loggedIn, firstName, noOfItems = getLoginDetails()
+        loggedIn, firstName, noOfItems,userId = getLoginDetails()
         categoryId = request.args.get("categoryId")
         with sqlite3.connect('db.db') as conn:
             cur = conn.cursor()
@@ -112,23 +169,23 @@ def displayCategory():
         conn.close()
         categoryName = data[0][4]
         data = parse(data)
-        return render_template('displayCategory.html', data=data, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryName=categoryName)
+        return render_template('displayCategory.html', data=data, userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryName=categoryName)
 
-@app.route("/account/profile")
+@app.route("/profile")
 def profileHome():
     if 'email' not in session:
         return redirect(url_for('root'))
-    loggedIn, firstName, noOfItems = getLoginDetails()
-    return render_template("profileHome.html", loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
+    loggedIn, firstName, noOfItems, userId = getLoginDetails()
+    return render_template("profileHome.html", userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
 
 @app.route("/account/profile/edit")
 def editProfile():
     if 'email' not in session:
         return redirect(url_for('root'))
-    loggedIn, firstName, noOfItems = getLoginDetails()
+    loggedIn, firstName, noOfItems,userId = getLoginDetails()
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
-        cur.execute("SELECT userId, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone FROM users WHERE email = ?", (session['email'], ))
+        cur.execute("SELECT userId, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode FROM users WHERE email = ?", (session['email'], ))
         profileData = cur.fetchone()
     conn.close()
     return render_template("editProfile.html", profileData=profileData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
@@ -154,7 +211,7 @@ def changePassword():
                 except:
                     conn.rollback()
                     msg = "Failed"
-                return render_template("changePassword.html", msg=msg)
+                return render_template("profileHome.html", msg=msg)
             else:
                 msg = "Wrong password"
         conn.close()
@@ -188,20 +245,22 @@ def updateProfile():
         con.close()
         return render_template("profileHome.html")
     
-@app.route("/account/profile/view")
+@app.route("/profile/view")
 def viewProfile():
     if 'email' not in session:
         return redirect(url_for('root'))
-    loggedIn, firstName, noOfItems = getLoginDetails()
+    loggedIn, firstName, noOfItems,userId = getLoginDetails()
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
         cur.execute("SELECT * FROM users WHERE email = ?", (session['email'], ))
         profileData = cur.fetchone()
     conn.close()
     print('----------------',profileData)
-    return render_template("profile.html", profileData=profileData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
+    return render_template("profile.html", profileData=profileData,userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
 
-
+@app.route("/new")
+def new():
+    return render_template("new.html")
 
 @app.route("/loginForm")
 def loginForm():
@@ -224,14 +283,14 @@ def login():
 
 @app.route("/productDescription")
 def productDescription():
-    loggedIn, firstName, noOfItems = getLoginDetails()
+    loggedIn, firstName, noOfItems,userId = getLoginDetails()
     productId = request.args.get('productId')
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
         cur.execute('SELECT productId, name, price, description, image, stock FROM products WHERE productId = ?', (productId, ))
         productData = cur.fetchone()
     conn.close()
-    return render_template("productDescription.html", data=productData, loggedIn = loggedIn, firstName = firstName, noOfItems = noOfItems)
+    return render_template("productDescription.html", data=productData, userId=userId, loggedIn = loggedIn, firstName = firstName, noOfItems = noOfItems)
 
 @app.route("/addToCart")
 def addToCart():
@@ -257,7 +316,7 @@ def addToCart():
 def cart():
     if 'email' not in session:
         return redirect(url_for('loginForm'))
-    loggedIn, firstName, noOfItems = getLoginDetails()
+    loggedIn, firstName, noOfItems,userId = getLoginDetails()
     email = session['email']
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
@@ -337,7 +396,7 @@ def register():
                 con.rollback()
                 msg = "Error occured"
         con.close()
-        return redirect(url_for('/loginForm'))
+        return redirect(url_for('dashboard'))
 
 @app.route("/registerationForm")
 def registrationForm():
@@ -387,15 +446,13 @@ def otpgen(mobile):
 
 def send_sms(mobile,otp):
     account_sid = 'AC77140ee2d91748224da609a3a61a6dc8'
-    auth_token = '650f5f821ee7a9d982aded37b3382645'
+    auth_token = '1daed45cb3c78d1066ab2f78498a5e88'
 
     twilio_number = '14066238105'
     target_number = '91'+mobile
 
     print('--------------target number ******** -------',target_number)
     print('--------------otp value ******** -------',otp) 
-
-    
 
     # client = Client(account_sid, auth_token)
 
@@ -417,6 +474,55 @@ def otp_val():
     else:
         return jsonify({'reply':'failed'})
 
+
+#adding category
+@app.route("/addCat")
+def adminCat():
+    with sqlite3.connect('db.db') as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT categoryId, name FROM categories")
+        categories = cur.fetchall()
+    conn.close()
+    return render_template('addCategory.html', categories=categories)
+
+@app.route("/addCategory", methods=["GET", "POST"])
+def addCategory():
+    if request.method == "POST":
+        name = request.form['catName']
+        categoryId = int(request.form['catId'])
+        with sqlite3.connect('db.db') as conn:
+            try:
+                cur = conn.cursor()
+                cur.execute('''INSERT INTO categories (name,categoryId) VALUES (?, ? )''', (name, categoryId))
+                conn.commit()
+                msg="added Category successfully"
+            except:
+                msg="error occured"
+                conn.rollback()
+        conn.close()
+        print(msg)
+        return redirect(url_for('dashboard'))
+    
+
+@app.route("/dashboard")
+def dashboard():
+    with sqlite3.connect('db.db') as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT *  FROM users")
+        users = cur.fetchall()
+        ucount = len(users)
+
+        cur.execute("SELECT *  FROM products")
+        products = cur.fetchall()
+        pcount = len(products)
+
+        cur.execute("SELECT *  FROM categories")
+        categories = cur.fetchall()
+        ccount = len(categories)
+
+    conn.close()
+    return render_template('dash.html', users=users,ucount=ucount,pcount=pcount,ccount=ccount,products=products,categories=categories)
+   
 
 if __name__ == '__main__':
     app.run(debug=True)

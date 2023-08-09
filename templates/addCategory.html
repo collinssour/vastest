@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Admin</title>
+<link rel="stylesheet" href='/static/css/all.css' />
+
+</head>
+<body>
+
+
+<form action="/addCategory" method="POST" enctype="multipart/form-data">
+	<div class="container">
+	<h2>Add Category</h2>
+	Cat ID : <input type="text" name="catId" value={{categories[0][0]}}><br>
+	Category Name : <input type="text" name="catName"><br>
+	
+	<input type="submit">
+	</div>
+</form>
+</body>
+</html>
+

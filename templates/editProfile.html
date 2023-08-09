@@ -2,44 +2,64 @@
 <html>
 <head>
 <title>Edit Profile </title>
+<meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- mobile metas -->
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+      <!-- site metas -->
+      <title>ltv multitrade</title>
+      <meta name="keywords" content="">
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <!-- bootstrap css -->
+      <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
+      <!-- style css -->
+      <link rel="stylesheet" type="text/css" href="/static/css/style3.css">
+      <!-- Responsive-->
+      <link rel="stylesheet" href="/static/css/responsive.css">
+      <!-- fevicon -->
+      <link rel="icon" href="/static/images/fevicon.png" type="image/gif" />
+      <!-- Scrollbar Custom CSS -->
+      <link rel="stylesheet" href="/static/css/jquery.mCustomScrollbar.min.css">
+      <!-- Tweaks for older IEs-->
+      <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+      <!-- fonts -->
+      <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+      <!-- font awesome -->
+      <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+      <!--  -->
+      <!-- owl stylesheets -->
+      <link href="https://fonts.googleapis.com/css?family=Great+Vibes|Poppins:400,700&display=swap&subset=latin-ext" rel="stylesheet">
+      <link rel="stylesheet" href="/static/css/owl.carousel.min.css">
+      <link rel="stylesoeet" href="/static/css/owl.theme.default.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
 <link rel="stylesheet" href='/static/css/main.css' />
+<link rel="stylesheet" href='/static/css/all.css' />
 </head>
+
 <body>
-<div id="title">
-	<a href="/">
-		<img id="logo" src= {{ url_for('static', filename='images/logo.png') }} />
-	</a>
-	<form>
-		<input id="searchBox" type="text" name="searchQuery">
-		<input id="searchButton" type="submit" value="Search">
-	</form>
-
-	{% if not loggedIn %}
-	<div id="signInButton">
-		<a class="link" href="/loginForm">Sign In</a>
-	</div>
-	{% else %}
-	<div class="dropdown">
-		<button class="dropbtn">Hello, <br>{{firstName}}</button>
-		<div class="dropdown-content">
-			<a href="/account/orders">Your orders</a>
-			<a href="/account/profile">Your profile</a>
-			<hr>
-			<a href="/logout">Sign Out</a>
+	<div class="logo_section">
+		<div class="container">
+		   <div class="row">
+			  <div class="col-sm-12">
+				 <div class="logo"><a href="/"><img src="/static/images/logo_ltv.png"></a></div>
+			  </div>
+		   </div>
 		</div>
-	</div>
-	{% endif %}
-	<div id="kart">
-		<a class="link" href="/cart">
-			<img src={{url_for('static', filename='images/shoppingCart.png')}} id="cartIcon" />
-			CART {{noOfItems}}
-		</a>
-	</div>
-</div>
-
+	 </div>
 <div class="display">
-	<h2>Edit profile</h2>
-	<form action="/updateProfile" method="POST">
+	
+	<form action="/updateProfile" method="POST" class="modal-content animate">
+		<center><h2><h2>Edit profile</h2></h2></center>
+		<nav aria-label="breadcrumb">
+			<ol class="breadcrumb">
+			  <li class="breadcrumb-item"><a href="#">{{profileData[0]}}</a></li>
+			  <li class="breadcrumb-item"><a href="#">{{profileData[11]}}</a></li>
+			  <li class="breadcrumb-item active" aria-current="page">{{profileData[12]}}</li>
+			</ol>
+		  </nav>
 		<p>Email:<input type="email" name="email" value={{profileData[1]}} readonly="readonly"></p>
 		<p>First Name:<input type="text" name="firstName" value={{profileData[2]}}></p>
 		<p>Last Name: <input type="text" name="lastName" value={{profileData[3]}}></p>
@@ -50,7 +70,8 @@
 		<p>State: <input type="text" name="state" value={{profileData[8]}}></p>
 		<p>Country: <input type="text" name="country" value={{profileData[9]}}></p>
 		<p>Phone Number: <input type="text" name="phone" value={{profileData[10]}}></p>
-		<input type="submit" value="Save">
+		<button type="submit">SAVE</button>
+		<button type="submit"><a href="/profile">CANCLE</a></button>
 	</form>
 </div>
 </body>

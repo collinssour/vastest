@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Remove</title>
+<link rel="stylesheet" href='/static/css/main.css' />
+</link>
+</head>
+<body>
+    <h1>hello</h1>
+    {{data}}
+<table>
+	{% for i in range(6) %}
+	<tr>
+		{% for row in data %}
+		<td>
+			<a href="/removeCategory?categoryId={{row[0]}}">
+                {% if i == 1 %}
+				<img src={{ url_for('static', filename='uploads/' + row[i]) }} id="itemImage" />
+			{% else %}
+				{{row[i]}}
+			{% endif %}
+			</a>
+		</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+</table>
+</body>
+</html>

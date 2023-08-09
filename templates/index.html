@@ -80,7 +80,20 @@
                      <a href="jewellery.html">Jewellery</a>
                   </div>
                   <span class="toggle_icon" onclick="openNav()"><img src="/static/images/toggle-icon.png"></span>
-                  
+
+
+
+                  <div class="dropdown">
+                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Category</button>
+                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        {% for cat in categoryData %}
+                        <a class="dropdown-item" href="/#">{{cat[1]}}</a>
+                        {% endfor %}
+                      </div>
+                  </div>
+
+
+
                   <div class="main">
                      <!-- Another variation with a button -->
                      <div class="input-group">
@@ -105,16 +118,21 @@
                       </div>
                          
                         {% else %}
+
                         <div class="dropdown">
                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hello, {{firstName}}</button>
                            
                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                              <a class="dropdown-item" href="/account/orders">Your orders</a>
-                              <a class="dropdown-item" href="/account/profile">Your profile</a>
+                              {% if userId == 999999 %}
+                              <a class="dropdown-item" href="/dashboard">DASHBOARD</a>
+                              {% else %}
+                              {% endif %}
+                              <a class="dropdown-item" href="/account/orders">YOUR ORDERS</a>
+                              <a class="dropdown-item" href="/profile">YOUR PROFILE</a>
                               <a class="dropdown-item" href="/cart">CART {{noOfItems}}</a>    
 
                               <hr>
-                              <a class="dropdown-item" href="/logout">Sign Out</a>
+                              <a class="dropdown-item" href="/logout">SIGN OUT</a>
                             </div>
                         </div>
                         {% endif %}

@@ -229,8 +229,8 @@ button {
 .header_section_top {
     width: 100%;
     float: left;
-    background-color: #2b2a29;
-    clip-path: polygon(0 0, 100% 0, 96% 100%, 3% 100%);
+    /*background-color: #2b2a29;
+    clip-path: polygon(0 0, 100% 0, 96% 100%, 3% 100%);*/
     height: auto;
     padding: 10px 0px;
 }
