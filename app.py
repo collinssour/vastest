@@ -1,4 +1,4 @@
-from flask import *
+from flask import Flask, request, session, render_template, redirect, url_for, jsonify
 import sqlite3, hashlib, os
 from werkzeug.utils import secure_filename
 import random as r
@@ -6,6 +6,7 @@ from twilio.rest import Client
 
 
 app = Flask(__name__)
+
 app.secret_key = 'random string'
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'gif'])
@@ -188,7 +189,7 @@ def editProfile():
         cur.execute("SELECT userId, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode FROM users WHERE email = ?", (session['email'], ))
         profileData = cur.fetchone()
     conn.close()
-    return render_template("editProfile.html", profileData=profileData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
+    return render_template("editProfile.html", profileData=profileData, userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
 
 @app.route("/account/profile/changePassword", methods=["GET", "POST"])
 def changePassword():
@@ -238,10 +239,10 @@ def updateProfile():
                     cur.execute('UPDATE users SET firstName = ?, lastName = ?, address1 = ?, address2 = ?, zipcode = ?, city = ?, state = ?, country = ?, phone = ? WHERE email = ?', (firstName, lastName, address1, address2, zipcode, city, state, country, phone, email))
 
                     con.commit()
-                    msg = "Saved Successfully"
+
                 except:
                     con.rollback()
-                    msg = "Error occured"
+
         con.close()
         return render_template("profileHome.html")
     
@@ -305,10 +306,10 @@ def addToCart():
             try:
                 cur.execute("INSERT INTO kart (userId, productId) VALUES (?, ?)", (userId, productId))
                 conn.commit()
-                msg = "Added successfully"
+
             except:
                 conn.rollback()
-                msg = "Error occured"
+
         conn.close()
         return redirect(url_for('root'))
 
@@ -342,10 +343,10 @@ def removeFromCart():
         try:
             cur.execute("DELETE FROM kart WHERE userId = ? AND productId = ?", (userId, productId))
             conn.commit()
-            msg = "removed successfully"
+
         except:
             conn.rollback()
-            msg = "error occured"
+
     conn.close()
     return redirect(url_for('root'))
 
@@ -388,13 +389,12 @@ def register():
             try:
                 cur = con.cursor()
                 cur.execute('INSERT INTO users (password, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (hashlib.md5(password.encode()).hexdigest(), email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode))
-
+                
                 con.commit()
-
-                msg = "Registered Successfully"
+                
             except:
                 con.rollback()
-                msg = "Error occured"
+
         con.close()
         return redirect(url_for('dashboard'))
 
@@ -421,6 +421,7 @@ def parse(data):
             curr.append(data[i])
             i += 1
         ans.append(curr)
+        print(j)
     return ans
 
 
@@ -433,7 +434,7 @@ def pass_val():
     return jsonify({'reply':'success'})
 
 
-otp = '0';
+otp = '0'
 
 def otpgen(mobile):
     global otp
@@ -450,9 +451,11 @@ def send_sms(mobile,otp):
 
     twilio_number = '14066238105'
     target_number = '91'+mobile
-
-    print('--------------target number ******** -------',target_number)
+    print('--------------target number ******** -------',target_number,)
     print('--------------otp value ******** -------',otp) 
+    print('-------------account_sid--------------',account_sid)
+    print('-------------auth_token----------------',auth_token)
+    print('---------------twilio_number-----------',twilio_number)
 
     # client = Client(account_sid, auth_token)
 
