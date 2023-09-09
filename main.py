@@ -44,9 +44,22 @@ def root():
         itemData = cur.fetchall()
         cur.execute('SELECT categoryId, name FROM categories')
         categoryData = cur.fetchall()
-    itemData = parser(itemData)   
+    itemData = parse(itemData)   
     return render_template('index.html', itemData=itemData,userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
 
+def parse(data):
+    ans = []
+    i = 0
+    while i < len(data):
+        curr = []
+        for j in range(7):
+            if i >= len(data):
+                break
+            curr.append(data[i])
+            i += 1
+        ans.append(curr)
+        print(j)
+    return ans
 
 if __name__ == '__main__':
 	app.run(host="0.0.0.0", port=3000)
