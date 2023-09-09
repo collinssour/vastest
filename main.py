@@ -35,7 +35,7 @@ def getLoginDetails():
     conn.close()
     return (loggedIn, firstName, noOfItems, userId)
 
-@app.route("https://byah8n2986.execute-api.us-west-2.amazonaws.com/")
+@app.route("/")
 def root():
     loggedIn, firstName, noOfItems, userId = getLoginDetails()
     with sqlite3.connect('db.db') as conn:
