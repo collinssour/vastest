@@ -3,7 +3,6 @@ from flask import Flask, request, session, render_template, redirect, url_for, j
 import sqlite3, hashlib, os
 from werkzeug.utils import secure_filename
 import random as r
-from dateutil.parser import parse
 
 app = Flask(__name__)
 
@@ -43,7 +42,7 @@ def root():
         itemData = cur.fetchall()
         cur.execute('SELECT categoryId, name FROM categories')
         categoryData = cur.fetchall()
-    itemData = dateutil.parser.parse(itemData)   
+    itemData = itemData   
     return render_template('index.html', itemData=itemData,userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
 
 
