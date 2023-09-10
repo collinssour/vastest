@@ -2,7 +2,7 @@ from flask import Flask, request, session, render_template, redirect, url_for, j
 import sqlite3, hashlib, os
 from werkzeug.utils import secure_filename
 import random as r
-from twilio.rest import Client
+#from twilio.rest import Client
 
 
 app = Flask(__name__)
@@ -528,6 +528,7 @@ def dashboard():
    
 
 if __name__ == "__main__":
-       app.run(port=3000)
+    app.run(host="0.0.0.0", port=3000)
+       
 
     
