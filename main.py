@@ -6,7 +6,7 @@ import random as r
 #from twilio.rest import Client
 
 
-main = Flask(__name__)
+app = Flask(__name__)
 
 app.secret_key = 'random string'
 UPLOAD_FOLDER = 'static/uploads'
@@ -534,4 +534,4 @@ def dashboard():
 
 
 if __name__ == '__main__':
-	main.run(host="0.0.0.0", port=3000)
+	app.run(host="0.0.0.0", port=3000)
