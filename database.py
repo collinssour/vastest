@@ -2,7 +2,7 @@ import sqlite3
 
 #Open database
 conn = sqlite3.connect('db.db')
-
+print(conn)
 #Create table
 conn.execute('''CREATE TABLE users 
 		(userId INTEGER PRIMARY KEY, 
