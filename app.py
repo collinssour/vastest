@@ -279,9 +279,11 @@ def login():
         password = request.form['password']
         if is_valid(email, password):
             session['email'] = email
+            print('------valid user-------')
             return redirect(url_for('root'))
         else:
             error = 'Invalid UserId / Password'
+            print('------invlid user-------')
             return render_template('login.html', error=error)
 
 @app.route("/productDescription")
