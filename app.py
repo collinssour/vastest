@@ -40,7 +40,9 @@ def root():
         print(itemData)
         cur.execute('SELECT categoryId, name FROM categories')
         categoryData = cur.fetchall()
-    itemData = parse(itemData)   
+    itemData = parse(itemData)
+    print(userId)
+    print(loggedIn)
     return render_template('index.html', itemData=itemData,userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
 
 @app.route("/add")
