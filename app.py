@@ -33,6 +33,7 @@ def getLoginDetails():
 def root():
     loggedIn, firstName, noOfItems, userId = getLoginDetails()
     with sqlite3.connect('db.db') as conn:
+        print(conn)
         cur = conn.cursor()
         cur.execute('SELECT productId, name, price, description, image, stock FROM products')
         itemData = cur.fetchall()
