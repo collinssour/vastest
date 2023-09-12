@@ -33,10 +33,11 @@ def getLoginDetails():
 def root():
     loggedIn, firstName, noOfItems, userId = getLoginDetails()
     with sqlite3.connect('db.db') as conn:
-        print(conn)
+        print('---------conn--------',conn)
         cur = conn.cursor()
         cur.execute('SELECT productId, name, price, description, image, stock FROM products')
         itemData = cur.fetchall()
+        print(itemData)
         cur.execute('SELECT categoryId, name FROM categories')
         categoryData = cur.fetchall()
     itemData = parse(itemData)   
