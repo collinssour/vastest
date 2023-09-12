@@ -20,13 +20,16 @@ def getLoginDetails():
             firstName = ''
             noOfItems = 0
             userId = 0
+            print('-----first----')
         else:
             loggedIn = True
+            print('-----second----')
             cur.execute("SELECT userId, firstName FROM users WHERE email = ?", (session['email'], ))
             userId, firstName = cur.fetchone()
             cur.execute("SELECT count(productId) FROM kart WHERE userId = ?", (userId, ))
             noOfItems = cur.fetchone()[0]
     conn.close()
+    print('..........................',loggedIn, firstName, noOfItems, userId)
     return (loggedIn, firstName, noOfItems, userId)
 
 @app.route("/")
