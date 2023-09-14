@@ -13,7 +13,7 @@ ALLOWED_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def getLoginDetails():
-        print('------values-------')
+    print('------values-------')
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
         print('------------session-----------',session)
