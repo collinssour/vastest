@@ -373,7 +373,7 @@ def is_valid(email, password):
     data = cur.fetchall()
     for row in data:
         if row[0] == email and row[1] == hashlib.md5(password.encode()).hexdigest():
-            print('-------------------------',row[0))
+            print('-------------------------',row[0])
             return True
     print('..............flase..........')
     return False
