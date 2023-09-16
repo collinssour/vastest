@@ -13,19 +13,19 @@ ALLOWED_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def getLoginDetails():
-    print('------values-------')
+    print('------ 1 getlogin details ------')
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
-        print('------------session-----------',session)
+        print('------------ 1 get seession -----------',session)
         if 'email' not in session:
+            print('---------1 if ----------')
             loggedIn = False
             firstName = ''
             noOfItems = 0
             userId = 0
-            print('-----first----')
         else:
             loggedIn = True
-            print('-----second----')
+            print('-----1 else ----')
             cur.execute("SELECT userId, firstName FROM users WHERE email = ?", (session['email'], ))
             userId, firstName = cur.fetchone()
             cur.execute("SELECT count(productId) FROM kart WHERE userId = ?", (userId, ))
@@ -37,6 +37,7 @@ def getLoginDetails():
 @app.route("/")
 def root():
     loggedIn, firstName, noOfItems, userId = getLoginDetails()
+    print('--------- roor details -------------',loggedIn, firstName, noOfItems, userId)
     with sqlite3.connect('db.db') as conn:
         print('---------conn--------',conn)
         cur = conn.cursor()
