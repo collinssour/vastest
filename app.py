@@ -8,6 +8,12 @@ from flask_session import Session
 
 
 app = Flask(__name__)
+
+app.secret_key = 'random string'
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'gif'])
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 # Configure Flask-Session to use server-side sessions
 app.config['SESSION_TYPE'] = 'filesystem'  # You can change this to other options as needed
 app.config['SESSION_PERMANENT'] = False
@@ -17,10 +23,6 @@ app.config['SESSION_KEY_PREFIX'] = 'your_prefix_here'  # Change this to a unique
 # Initialize the session extension
 Session(app)
 
-app.secret_key = 'random string'
-UPLOAD_FOLDER = 'static/uploads'
-ALLOWED_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'gif'])
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def getLoginDetails():
     print('------ 1 getlogin details ------')
