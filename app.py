@@ -18,7 +18,9 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SESSION_TYPE'] = 'filesystem'  # You can change this to other options as needed
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
-app.config['SESSION_KEY_PREFIX'] = 'myapp'  # Change this to a unique prefix
+# Specify a writable directory for session storage
+app.config['SESSION_FILE_DIR'] = '/Users/apple/vstest/session'  # Use a directory path that is writable
+app.config['SESSION_KEY_PREFIX'] = 'MyApp'  # Replace with your unique prefix
 
 # Initialize the session extension
 Session(app)
@@ -554,7 +556,7 @@ def dashboard():
    
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3000)
+    app.run(host="0.0.0.0", port=43221)
        
 
     
