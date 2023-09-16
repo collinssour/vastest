@@ -3,9 +3,19 @@ import sqlite3, hashlib, os
 from werkzeug.utils import secure_filename
 import random as r
 #from twilio.rest import Client
+from flask_session import Session
+
 
 
 app = Flask(__name__)
+# Configure Flask-Session to use server-side sessions
+app.config['SESSION_TYPE'] = 'filesystem'  # You can change this to other options as needed
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_KEY_PREFIX'] = 'your_prefix_here'  # Change this to a unique prefix
+
+# Initialize the session extension
+Session(app)
 
 app.secret_key = 'random string'
 UPLOAD_FOLDER = 'static/uploads'
