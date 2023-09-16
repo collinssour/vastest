@@ -19,7 +19,7 @@ app.config['SESSION_TYPE'] = 'filesystem'  # You can change this to other option
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 # Specify a writable directory for session storage
-app.config['SESSION_FILE_DIR'] = os.path.join(app.root_path, 'flask_session')  # Use a directory path that is writable
+app.config['SESSION_FILE_DIR'] = '/home/cloudshell-user/app/flask_session'  # Use a directory path that is writable
 app.config['SESSION_KEY_PREFIX'] = 'MyApp'  # Replace with your unique prefix
 
 # Initialize the session extension
