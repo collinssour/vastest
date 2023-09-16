@@ -18,7 +18,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SESSION_TYPE'] = 'filesystem'  # You can change this to other options as needed
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
-app.config['SESSION_KEY_PREFIX'] = 'your_prefix_here'  # Change this to a unique prefix
+app.config['SESSION_KEY_PREFIX'] = 'myapp'  # Change this to a unique prefix
 
 # Initialize the session extension
 Session(app)
