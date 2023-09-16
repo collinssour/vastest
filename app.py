@@ -3,6 +3,7 @@ import sqlite3, hashlib, os
 from werkzeug.utils import secure_filename
 import random as r
 #from twilio.rest import Client
+from redis import Redis
 from flask_session import Session
 
 
@@ -15,10 +16,11 @@ ALLOWED_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Configure Flask-Session to use server-side sessions
-app.config['SESSION_TYPE'] = 'filesystem'  # You can change this to other options as needed
+app.config['SESSION_TYPE'] = 'redis'  # You can change this to other options as needed
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 # Specify a writable directory for session storage
+app.config['SESSION_REDIS'] = Redis(host="0.0.0.0", port=6379, db=0)
 app.config['SESSION_FILE_DIR'] = '/home/cloudshell-user/app/flask_session'  # Use a directory path that is writable
 app.config['SESSION_KEY_PREFIX'] = 'MyApp'  # Replace with your unique prefix
 
