@@ -19,7 +19,7 @@ app.config['SESSION_TYPE'] = 'filesystem'  # You can change this to other option
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 # Specify a writable directory for session storage
-app.config['SESSION_FILE_DIR'] = '/Users/apple/vstest/session'  # Use a directory path that is writable
+app.config['SESSION_FILE_DIR'] = 'https://github.com/phaneendra548/vstest/tree/master/sql'  # Use a directory path that is writable
 app.config['SESSION_KEY_PREFIX'] = 'MyApp'  # Replace with your unique prefix
 
 # Initialize the session extension
