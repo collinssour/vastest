@@ -3,7 +3,6 @@ import sqlite3, hashlib, os
 from werkzeug.utils import secure_filename
 import random as r
 #from twilio.rest import Client
-from redis import Redis
 from flask_session import Session
 
 
