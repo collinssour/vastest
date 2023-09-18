@@ -20,7 +20,7 @@ app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 
 # Specify the relative path to the session directory within your Git repo
-app.config['SESSION_FILE_DIR'] = 'sql'  # Relative path to the directory
+app.config['SESSION_FILE_DIR'] = 'session'  # Relative path to the directory
 app.config['SESSION_KEY_PREFIX'] = 'MyApp'  # Replace with your unique prefix
 
 # Initialize the session extension
