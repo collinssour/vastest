@@ -1,25 +1,29 @@
-# For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.10-slim
+FROM public.ecr.aws/zeet/lambdahandler:latest
 
-EXPOSE 5002
+RUN yum install -y amazon-linux-extras && amazon-linux-extras install -y python3.8
+RUN ln -s /usr/bin/python3.8 /usr/bin/python3 || true
 
-# Keeps Python from generating .pyc files in the container
-ENV PYTHONDONTWRITEBYTECODE=1
+RUN ln -s /usr/bin/pip3.8 /usr/bin/pip3 || true
 
-# Turns off buffering for easier container logging
-ENV PYTHONUNBUFFERED=1
+# Create a writable directory
+RUN mkdir /app/session
 
-# Install pip requirements
-COPY requirements.txt .
-RUN python -m pip install -r requirements.txt
+# Set permissions for the directory (optional)
+RUN chmod 777 /app/session
+
 
 WORKDIR /app
-COPY . /app
 
-# Creates a non-root user with an explicit UID and adds permission to access the /app folder
-# For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
-USER appuser
+COPY . .
 
-# During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-CMD ["gunicorn", "--bind", "0.0.0.0:5002", "app:app"]
+
+
+ARG GIT_COMMIT_SHA
+ARG ZEET_ENVIRONMENT
+ARG GUNICORN_CMD_ARGS
+ARG PYTHONUNBUFFERED
+ARG UVICORN_HOST
+ARG ZEET_APP
+ARG ZEET_PROJECT
+
+RUN pip3 install -r requirements.txt
