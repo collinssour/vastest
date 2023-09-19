@@ -4,12 +4,14 @@ from werkzeug.utils import secure_filename
 import random as r
 #from twilio.rest import Client
 from flask_session import Session
+import os
+
 
 
 
 app = Flask(__name__)
-
-app.secret_key = 'random string'
+app.secret_key = os.urandom(24)
+#app.secret_key = 'random string'
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
