@@ -6,6 +6,12 @@ RUN ln -s /usr/bin/python3.8 /usr/bin/python3 || true
 RUN ln -s /usr/bin/pip3.8 /usr/bin/pip3 || true
 
 
+# Create a writable directory
+RUN mkdir /app/session
+
+# Set permissions for the directory (optional)
+RUN chmod 777 /app/session
+
 WORKDIR /app
 RUN mkdir -p /app/session
 RUN chmod 777 /app/session
