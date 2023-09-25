@@ -13,6 +13,12 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
+# Create a writable directory
+RUN mkdir /app/session
+
+# Set permissions for the directory (optional)
+RUN chmod 777 /app/session
+
 WORKDIR /app
 COPY . /app
 
