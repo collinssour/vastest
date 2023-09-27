@@ -1,13 +1,12 @@
-# A very simple Flask Hello World app for you to get started with...
 from flask import Flask, request, session, render_template, redirect, url_for, jsonify
 import sqlite3, hashlib, os
 from werkzeug.utils import secure_filename
 import random as r
-app = Flask(__name__)
+#from twilio.rest import Client
 
-# @app.route('/')
-# def hello_world():
-#     return 'This page is from internal'
+
+
+app = Flask(__name__)
 
 app.secret_key = 'random string'
 UPLOAD_FOLDER = 'static/uploads'
@@ -21,6 +20,7 @@ def getLoginDetails():
             loggedIn = False
             firstName = ''
             noOfItems = 0
+            userId = 0
         else:
             loggedIn = True
             cur.execute("SELECT userId, firstName FROM users WHERE email = ?", (session['email'], ))
@@ -28,19 +28,22 @@ def getLoginDetails():
             cur.execute("SELECT count(productId) FROM kart WHERE userId = ?", (userId, ))
             noOfItems = cur.fetchone()[0]
     conn.close()
-    return (loggedIn, firstName, noOfItems)
+    return (loggedIn, firstName, noOfItems, userId)
 
 @app.route("/")
 def root():
-    loggedIn, firstName, noOfItems = getLoginDetails()
+    loggedIn, firstName, noOfItems, userId = getLoginDetails()
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
         cur.execute('SELECT productId, name, price, description, image, stock FROM products')
         itemData = cur.fetchall()
+        print(itemData)
         cur.execute('SELECT categoryId, name FROM categories')
         categoryData = cur.fetchall()
     itemData = parse(itemData)
-    return render_template('index.html', itemData=itemData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
+    print(userId)
+    print(loggedIn)
+    return render_template('index.html', itemData=itemData,userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
 
 @app.route("/add")
 def admin():
@@ -77,7 +80,7 @@ def addItem():
                 conn.rollback()
         conn.close()
         print(msg)
-        return redirect(url_for('root'))
+        return redirect(url_for('dashboard'))
 
 @app.route("/remove")
 def remove():
@@ -102,11 +105,67 @@ def removeItem():
             msg = "Error occured"
     conn.close()
     print(msg)
-    return redirect(url_for('root'))
+    return redirect(url_for('dashboard'))
+
+@app.route("/removeCat")
+def removeCat():
+    with sqlite3.connect('db.db') as conn:
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM categories')
+        data = cur.fetchall()
+    conn.close()
+    return render_template('removecategory.html', data=data)
+
+
+@app.route("/removeCategory")
+def removeCategory():
+    categoryId = request.args.get('categoryId')
+    with sqlite3.connect('db.db') as conn:
+        try:
+            cur = conn.cursor()
+            cur.execute('DELETE FROM categories WHERE categoryId = ?', (categoryId, ))
+            conn.commit()
+            msg = "Deleted successsfully"
+        except:
+            conn.rollback()
+            msg = "Error occured"
+    conn.close()
+    print(msg)
+    return redirect(url_for('dashboard'))
+
+# removing the user
+@app.route("/removeUser")
+def removeUser():
+    with sqlite3.connect('db.db') as conn:
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM users')
+        data = cur.fetchall()
+    conn.close()
+    return render_template('removeuser.html', data=data)
+
+
+@app.route("/removeUsr")
+def removeUsr():
+    userId = request.args.get('userId')
+    with sqlite3.connect('db.db') as conn:
+        try:
+            cur = conn.cursor()
+            cur.execute('DELETE FROM users WHERE userId = ?', (userId, ))
+            conn.commit()
+            msg = "Deleted successsfully"
+        except:
+            conn.rollback()
+            msg = "Error occured"
+    conn.close()
+    print(msg)
+    return redirect(url_for('dashboard'))
+
+
+
 
 @app.route("/displayCategory")
 def displayCategory():
-        loggedIn, firstName, noOfItems = getLoginDetails()
+        loggedIn, firstName, noOfItems,userId = getLoginDetails()
         categoryId = request.args.get("categoryId")
         with sqlite3.connect('db.db') as conn:
             cur = conn.cursor()
@@ -115,26 +174,26 @@ def displayCategory():
         conn.close()
         categoryName = data[0][4]
         data = parse(data)
-        return render_template('displayCategory.html', data=data, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryName=categoryName)
+        return render_template('displayCategory.html', data=data, userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryName=categoryName)
 
-@app.route("/account/profile")
+@app.route("/profile")
 def profileHome():
     if 'email' not in session:
         return redirect(url_for('root'))
-    loggedIn, firstName, noOfItems = getLoginDetails()
-    return render_template("profileHome.html", loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
+    loggedIn, firstName, noOfItems, userId = getLoginDetails()
+    return render_template("profileHome.html", userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
 
 @app.route("/account/profile/edit")
 def editProfile():
     if 'email' not in session:
         return redirect(url_for('root'))
-    loggedIn, firstName, noOfItems = getLoginDetails()
+    loggedIn, firstName, noOfItems,userId = getLoginDetails()
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
-        cur.execute("SELECT userId, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone FROM users WHERE email = ?", (session['email'], ))
+        cur.execute("SELECT userId, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode FROM users WHERE email = ?", (session['email'], ))
         profileData = cur.fetchone()
     conn.close()
-    return render_template("editProfile.html", profileData=profileData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
+    return render_template("editProfile.html", profileData=profileData, userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
 
 @app.route("/account/profile/changePassword", methods=["GET", "POST"])
 def changePassword():
@@ -157,7 +216,7 @@ def changePassword():
                 except:
                     conn.rollback()
                     msg = "Failed"
-                return render_template("changePassword.html", msg=msg)
+                return render_template("profileHome.html", msg=msg)
             else:
                 msg = "Wrong password"
         conn.close()
@@ -184,27 +243,28 @@ def updateProfile():
                     cur.execute('UPDATE users SET firstName = ?, lastName = ?, address1 = ?, address2 = ?, zipcode = ?, city = ?, state = ?, country = ?, phone = ? WHERE email = ?', (firstName, lastName, address1, address2, zipcode, city, state, country, phone, email))
 
                     con.commit()
-                    msg = "Saved Successfully"
+
                 except:
                     con.rollback()
-                    msg = "Error occured"
+
         con.close()
         return render_template("profileHome.html")
-
-@app.route("/account/profile/view")
+    
+@app.route("/profile/view")
 def viewProfile():
     if 'email' not in session:
         return redirect(url_for('root'))
-    loggedIn, firstName, noOfItems = getLoginDetails()
+    loggedIn, firstName, noOfItems,userId = getLoginDetails()
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
         cur.execute("SELECT * FROM users WHERE email = ?", (session['email'], ))
         profileData = cur.fetchone()
     conn.close()
-    print('----------------',profileData)
-    return render_template("profile.html", profileData=profileData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
+    return render_template("profile.html", profileData=profileData,userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
 
-
+@app.route("/new")
+def new():
+    return render_template("new.html")
 
 @app.route("/loginForm")
 def loginForm():
@@ -227,14 +287,14 @@ def login():
 
 @app.route("/productDescription")
 def productDescription():
-    loggedIn, firstName, noOfItems = getLoginDetails()
+    loggedIn, firstName, noOfItems,userId = getLoginDetails()
     productId = request.args.get('productId')
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
         cur.execute('SELECT productId, name, price, description, image, stock FROM products WHERE productId = ?', (productId, ))
         productData = cur.fetchone()
     conn.close()
-    return render_template("productDescription.html", data=productData, loggedIn = loggedIn, firstName = firstName, noOfItems = noOfItems)
+    return render_template("productDescription.html", data=productData, userId=userId, loggedIn = loggedIn, firstName = firstName, noOfItems = noOfItems)
 
 @app.route("/addToCart")
 def addToCart():
@@ -249,10 +309,10 @@ def addToCart():
             try:
                 cur.execute("INSERT INTO kart (userId, productId) VALUES (?, ?)", (userId, productId))
                 conn.commit()
-                msg = "Added successfully"
+
             except:
                 conn.rollback()
-                msg = "Error occured"
+
         conn.close()
         return redirect(url_for('root'))
 
@@ -260,7 +320,7 @@ def addToCart():
 def cart():
     if 'email' not in session:
         return redirect(url_for('loginForm'))
-    loggedIn, firstName, noOfItems = getLoginDetails()
+    loggedIn, firstName, noOfItems,userId = getLoginDetails()
     email = session['email']
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
@@ -286,10 +346,10 @@ def removeFromCart():
         try:
             cur.execute("DELETE FROM kart WHERE userId = ? AND productId = ?", (userId, productId))
             conn.commit()
-            msg = "removed successfully"
+
         except:
             conn.rollback()
-            msg = "error occured"
+
     conn.close()
     return redirect(url_for('root'))
 
@@ -311,7 +371,7 @@ def is_valid(email, password):
 @app.route("/register", methods = ['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        #Parse form data
+        #Parse form data    
         password = request.form['password']
         email = request.form['email']
         firstName = request.form['firstName']
@@ -332,15 +392,14 @@ def register():
             try:
                 cur = con.cursor()
                 cur.execute('INSERT INTO users (password, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (hashlib.md5(password.encode()).hexdigest(), email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode))
-
+                
                 con.commit()
-
-                msg = "Registered Successfully"
+                
             except:
                 con.rollback()
-                msg = "Error occured"
+
         con.close()
-        return redirect(url_for('/loginForm'))
+        return redirect(url_for('dashboard'))
 
 @app.route("/registerationForm")
 def registrationForm():
@@ -365,6 +424,7 @@ def parse(data):
             curr.append(data[i])
             i += 1
         ans.append(curr)
+        print(j)
     return ans
 
 
@@ -377,7 +437,7 @@ def pass_val():
     return jsonify({'reply':'success'})
 
 
-otp = '0';
+otp = '0'
 
 def otpgen(mobile):
     global otp
@@ -390,15 +450,15 @@ def otpgen(mobile):
 
 def send_sms(mobile,otp):
     account_sid = 'AC77140ee2d91748224da609a3a61a6dc8'
-    auth_token = '650f5f821ee7a9d982aded37b3382645'
+    auth_token = '1daed45cb3c78d1066ab2f78498a5e88'
 
     twilio_number = '14066238105'
     target_number = '91'+mobile
-
-    print('--------------target number ******** -------',target_number)
-    print('--------------otp value ******** -------',otp)
-
-
+    # print('--------------target number ******** -------',target_number,)
+    # print('--------------otp value ******** -------',otp) 
+    # print('-------------account_sid--------------',account_sid)
+    # print('-------------auth_token----------------',auth_token)
+    # print('---------------twilio_number-----------',twilio_number)
 
     # client = Client(account_sid, auth_token)
 
@@ -406,7 +466,7 @@ def send_sms(mobile,otp):
     #                           from_= twilio_number,
     #                           body = 'One Time Password For Registration' +otp,
     #                           to = target_number
-    #                       )
+    #                       ) 
     # print(message.sid)
 
 @app.route('/otp_val',methods = ['POST', 'GET'])
@@ -414,11 +474,11 @@ def otp_val():
     global ootp
     ootp =request.args.get('value')
     print('name',ootp)
-    print('--------',otp)
     if(otp == ootp):
         return jsonify({'reply':'success'})
     else:
         return jsonify({'reply':'failed'})
+
 
 #adding category
 @app.route("/addCat")
@@ -447,7 +507,7 @@ def addCategory():
         conn.close()
         print(msg)
         return redirect(url_for('dashboard'))
-
+    
 
 @app.route("/dashboard")
 def dashboard():
@@ -467,3 +527,10 @@ def dashboard():
 
     conn.close()
     return render_template('dash.html', users=users,ucount=ucount,pcount=pcount,ccount=ccount,products=products,categories=categories)
+   
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=3000)
+       
+
+    
