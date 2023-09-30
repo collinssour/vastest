@@ -1,12 +1,13 @@
+# A very simple Flask Hello World app for you to get started with...
 from flask import Flask, request, session, render_template, redirect, url_for, jsonify
 import sqlite3, hashlib, os
 from werkzeug.utils import secure_filename
 import random as r
-#from twilio.rest import Client
-
-
-
 app = Flask(__name__)
+
+# @app.route('/')
+# def hello_world():
+#     return 'This page is from internal'
 
 app.secret_key = 'random string'
 UPLOAD_FOLDER = 'static/uploads'
@@ -14,26 +15,33 @@ ALLOWED_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def getLoginDetails():
+    print('------ 1 getlogin details ------')
     with sqlite3.connect('db.db') as conn:
         cur = conn.cursor()
+        print('------------ 1 get seession -----------',session)
         if 'email' not in session:
+            print('---------1 if ----------')
             loggedIn = False
             firstName = ''
             noOfItems = 0
             userId = 0
         else:
             loggedIn = True
+            print('-----1 else ----')
             cur.execute("SELECT userId, firstName FROM users WHERE email = ?", (session['email'], ))
             userId, firstName = cur.fetchone()
             cur.execute("SELECT count(productId) FROM kart WHERE userId = ?", (userId, ))
             noOfItems = cur.fetchone()[0]
     conn.close()
+    print('..........................',loggedIn, firstName, noOfItems, userId)
     return (loggedIn, firstName, noOfItems, userId)
 
 @app.route("/")
 def root():
     loggedIn, firstName, noOfItems, userId = getLoginDetails()
+    print('--------- roor details -------------',loggedIn, firstName, noOfItems, userId)
     with sqlite3.connect('db.db') as conn:
+        print('---------conn--------',conn)
         cur = conn.cursor()
         cur.execute('SELECT productId, name, price, description, image, stock FROM products')
         itemData = cur.fetchall()
@@ -249,7 +257,7 @@ def updateProfile():
 
         con.close()
         return render_template("profileHome.html")
-    
+
 @app.route("/profile/view")
 def viewProfile():
     if 'email' not in session:
@@ -260,6 +268,7 @@ def viewProfile():
         cur.execute("SELECT * FROM users WHERE email = ?", (session['email'], ))
         profileData = cur.fetchone()
     conn.close()
+    print('----------------',profileData)
     return render_template("profile.html", profileData=profileData,userId=userId, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
 
 @app.route("/new")
@@ -280,9 +289,11 @@ def login():
         password = request.form['password']
         if is_valid(email, password):
             session['email'] = email
+            print('------valid user-------')
             return redirect(url_for('root'))
         else:
             error = 'Invalid UserId / Password'
+            print('------invlid user-------')
             return render_template('login.html', error=error)
 
 @app.route("/productDescription")
@@ -365,13 +376,15 @@ def is_valid(email, password):
     data = cur.fetchall()
     for row in data:
         if row[0] == email and row[1] == hashlib.md5(password.encode()).hexdigest():
+            print('-------------------------',row[0])
             return True
+    print('..............flase..........')
     return False
 
 @app.route("/register", methods = ['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        #Parse form data    
+        #Parse form data
         password = request.form['password']
         email = request.form['email']
         firstName = request.form['firstName']
@@ -392,9 +405,9 @@ def register():
             try:
                 cur = con.cursor()
                 cur.execute('INSERT INTO users (password, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (hashlib.md5(password.encode()).hexdigest(), email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode))
-                
+
                 con.commit()
-                
+
             except:
                 con.rollback()
 
@@ -454,11 +467,11 @@ def send_sms(mobile,otp):
 
     twilio_number = '14066238105'
     target_number = '91'+mobile
-    # print('--------------target number ******** -------',target_number,)
-    # print('--------------otp value ******** -------',otp) 
-    # print('-------------account_sid--------------',account_sid)
-    # print('-------------auth_token----------------',auth_token)
-    # print('---------------twilio_number-----------',twilio_number)
+    print('--------------target number ******** -------',target_number,)
+    print('--------------otp value ******** -------',otp)
+    print('-------------account_sid--------------',account_sid)
+    print('-------------auth_token----------------',auth_token)
+    print('---------------twilio_number-----------',twilio_number)
 
     # client = Client(account_sid, auth_token)
 
@@ -466,7 +479,7 @@ def send_sms(mobile,otp):
     #                           from_= twilio_number,
     #                           body = 'One Time Password For Registration' +otp,
     #                           to = target_number
-    #                       ) 
+    #                       )
     # print(message.sid)
 
 @app.route('/otp_val',methods = ['POST', 'GET'])
@@ -474,6 +487,7 @@ def otp_val():
     global ootp
     ootp =request.args.get('value')
     print('name',ootp)
+    print('--------',otp)
     if(otp == ootp):
         return jsonify({'reply':'success'})
     else:
@@ -507,7 +521,7 @@ def addCategory():
         conn.close()
         print(msg)
         return redirect(url_for('dashboard'))
-    
+
 
 @app.route("/dashboard")
 def dashboard():
@@ -527,10 +541,3 @@ def dashboard():
 
     conn.close()
     return render_template('dash.html', users=users,ucount=ucount,pcount=pcount,ccount=ccount,products=products,categories=categories)
-   
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3000)
-       
-
-    
