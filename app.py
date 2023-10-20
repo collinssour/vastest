@@ -384,6 +384,8 @@ def is_valid(email, password):
 @app.route("/register", methods = ['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        loggedIn, firstName, noOfItems, userId = getLoginDetails()
+        print('--------- details -------------',loggedIn, firstName, noOfItems, userId)
         #Parse form data
         password = request.form['password']
         email = request.form['email']
@@ -399,12 +401,10 @@ def register():
         code = request.form['code']
         ucode = request.form['ucode']
 
-
-
         with sqlite3.connect('db.db') as con:
             try:
                 cur = con.cursor()
-                cur.execute('INSERT INTO users (password, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (hashlib.md5(password.encode()).hexdigest(), email, firstName, lastName, address1, address2, zipcode, city, state, country, phone, code, ucode))
+                cur.execute('INSERT INTO users (password, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone,code,ucode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)', (hashlib.md5(password.encode()).hexdigest(), email, firstName, lastName, address1, address2, zipcode, city, state, country, phone,code,ucode))
 
                 con.commit()
 
@@ -412,7 +412,10 @@ def register():
                 con.rollback()
 
         con.close()
-        return redirect(url_for('dashboard'))
+        if userId == 999999 :
+            return redirect(url_for('dashboard'))
+        else:
+            return redirect(url_for('root'))
 
 @app.route("/registerationForm")
 def registrationForm():
@@ -541,3 +544,7 @@ def dashboard():
 
     conn.close()
     return render_template('dash.html', users=users,ucount=ucount,pcount=pcount,ccount=ccount,products=products,categories=categories)
+
+
+if __name__ == '__main__':
+	app.run(host="0.0.0.0", port=3000)

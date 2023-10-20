@@ -3,7 +3,28 @@
 <head>
 <title>Admin</title>
 <link rel="stylesheet" href='/static/css/all.css' />
+<script>
+// Function to generate a random 6-digit number
+    function generateRandomNumber() {
+            return Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        }
 
+        // Function to generate and update the auto code
+        function generateAutoCode() {
+            let codePrefix = '';
+            let randomCode = generateRandomNumber();
+
+            // Combine the prefix and random number
+            let fullCode = codePrefix + randomCode;
+
+            // Update the input field
+            document.getElementById('catId').value = fullCode;
+        }
+
+        // Call the function on page load
+        window.onload = generateAutoCode;
+
+</script>
 </head>
 <body>
 
@@ -11,9 +32,9 @@
 <form action="/addCategory" method="POST" enctype="multipart/form-data">
 	<div class="container">
 	<h2>Add Category</h2>
-	Cat ID : <input type="text" name="catId" value={{categories[0][0]}}><br>
+	Cat ID : <input type="text" name="catId" id="catId"><br>
 	Category Name : <input type="text" name="catName"><br>
-	
+
 	<input type="submit">
 	</div>
 </form>

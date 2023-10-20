@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auto Code Generator</title>
+</head>
+<body>
+    <label for="autoCode">Auto Code:</label>
+    <input type="text" id="autoCode" readonly>
+    
+    <script>
+        // Function to generate a random 6-digit number
+        function generateRandomNumber() {
+            return Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+        }
+
+        // Function to generate and update the auto code
+        function generateAutoCode() {
+            let codePrefix = 'CA';
+            let randomCode = generateRandomNumber();
+            
+            // Combine the prefix and random number
+            let fullCode = codePrefix + randomCode;
+            
+            // Update the input field
+            document.getElementById('autoCode').value = fullCode;
+        }
+        
+        // Call the function on page load
+        window.onload = generateAutoCode;
+    </script>
+</body>
+</html>

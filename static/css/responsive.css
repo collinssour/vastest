@@ -387,7 +387,7 @@
         justify-content: space-between;
     }
     .dropdown {
-        display: none;
+        /* display: none;*/
     }
     .login_menu li {
         float: left;

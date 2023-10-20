@@ -4,8 +4,8 @@
       <!-- basic -->
       <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <!-- mobile metas -->
+      <!--<meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- mobile metas
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="viewport" content="initial-scale=1, maximum-scale=1">
       <!-- site metas -->
@@ -69,46 +69,31 @@
                </div>
             </div>
          </div>
-        <div class="container">
-            <div class="header_section_top" style="background: border-box;">
-               <div class="row">
-                        <div class="col-sm-4"> 
-                            
-                            <form action="/getUsers" method="POST">
-                            <button type="button" class="btn btn-primary" style="margin-left:20%;">Users 
+
+<div class="accordion" id="accordionExample">
+  <div class="card" style="
+    width: 60%;
+    margin-left: 19%;">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Users
+          <form action="/getUsers" method="POST">
+                            <button type="button" class="btn btn-primary" style="margin-left:20%;">Users
                                 <span class="badge badge-light">{{ucount}}</span>
-                                <span class="badge badge-light"><a href ="/registerationForm"> Add </a></span> 
-                                <span class="badge badge-light"><a href ="/removeUser"> Remove </a></span> 
+                                <span class="badge badge-light"><a href ="/registerationForm"> Add </a></span>
+                                <span class="badge badge-light"><a href ="/removeUser"> Remove </a></span>
 
 
                              </button>
-                        </form> 
-                        </div>
-                        <div class="col-sm-4">
-                            <form action="/" method="POST">
-                                <button type="button" class="btn btn-primary" style="margin-left:20%;">Products 
-                                    <span class="badge badge-light">{{pcount}}</span>
-                                    <span class="badge badge-light"><a href ="/add"> Add </a></span> 
-                                    <span class="badge badge-light"><a href ="/remove"> Remove </a></span> 
-                                 </button>
-                            </form>
-                        </div> 
-                        <div class="col-sm-4">
-                           
-                                <button type="button" class="btn btn-primary" style="margin-left:20%;">Categories 
-                                    <span class="badge badge-light">{{ccount}} </span>
-                                    <span class="badge badge-light"><a href ="/addCat"> Add </a></span> 
-                                    <span class="badge badge-light"><a href ="/removeCat"> Remove </a></span> 
-                                 </button>
-                                 
+                        </form>
+        </button>
+      </h5>
+    </div>
 
-                        </div> 
-                </div>
-            </div>
-                <div class="header_section_top">
-                    <div class="row">
-                             <div class="col-sm-4">      
-	                        <table class="table table-hover table-bordered">
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+      <div class="card-body">
+          <table class="table table-hover table-bordered">
                                 <thead class="thead-dark">
                                 <tr id="userdata">
                                     <th>UID</th>
@@ -125,14 +110,32 @@
                                     <td>{{itemData[13]}}</td>
                                     <td><span class="badge badge-light"><a href ="#">Edit</a></span> </td>
 		                        </tr>
-                                {% endfor %}                     
+                                {% endfor %}
                                 </tbody>
 	                        </table>
-
-                         </div>
-                        
-                         <div class="col-sm-4">      
-	                        <table class="table table-hover table-bordered">
+      </div>
+    </div>
+  </div>
+  <div class="card" style="
+    width: 60%;
+    margin-left: 19%;">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Products
+          <form action="/" method="POST">
+                                <button type="button" class="btn btn-primary" style="margin-left:20%;">Products
+                                    <span class="badge badge-light">{{pcount}}</span>
+                                    <span class="badge badge-light"><a href ="/add"> Add </a></span>
+                                    <span class="badge badge-light"><a href ="/remove"> Remove </a></span>
+                                 </button>
+                            </form>
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+      <div class="card-body">
+          <table class="table table-hover table-bordered">
                                 <thead class="thead-dark">
                                 <tr id="userdata">
 			                        <th>PId</th>
@@ -147,13 +150,30 @@
                                     <td>{{itemData[1]}}</td>
                                     <td><span class="badge badge-light"><a href ="#">Edit</a></span> </td>
 		                        </tr>
-                                {% endfor %}                     
+                                {% endfor %}
                                 </tbody>
 	                        </table>
-
-                         </div>
-                         <div class="col-sm-4">      
-	                        <table class="table table-hover table-bordered">
+      </div>
+    </div>
+  </div>
+  <div class="card" style="
+    width: 60%;
+    margin-left: 19%;">
+    <div class="card-header" id="headingThree">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Categories
+           <button type="button" class="btn btn-primary" style="margin-left:20%;">Categories
+                                    <span class="badge badge-light">{{ccount}} </span>
+                                    <span class="badge badge-light"><a href ="/addCat"> Add </a></span>
+                                    <span class="badge badge-light"><a href ="/removeCat"> Remove </a></span>
+                                 </button>
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+      <div class="card-body">
+          <table class="table table-hover table-bordered">
                                 <thead class="thead-dark">
                                 <tr id="userdata">
 			                        <th>CId</th>
@@ -168,14 +188,14 @@
                                     <td>{{itemData[1]}}</td>
                                     <td><span class="badge badge-light"><a href ="#">Edit</a></span> </td>
 		                        </tr>
-                                {% endfor %}                     
+                                {% endfor %}
                                 </tbody>
 	                        </table>
-                         </div>
-                     </div>
-                     
-            </div>
-        
+      </div>
+    </div>
+  </div>
+</div>
+
          <!-- copyright section end -->
          <!-- Javascript files-->
          <script src="/static/js/jquery.min.js"></script>
@@ -190,15 +210,15 @@
             function openNav() {
               document.getElementById("mySidenav").style.width = "250px";
             }
-            
+
             function closeNav() {
               document.getElementById("mySidenav").style.width = "0";
             }
          </script>
-         
+
     </body>
 
 
 
-                    
-         
+
+

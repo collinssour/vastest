@@ -35,16 +35,16 @@
 
                 }
             );
-            
+
             alert('OTP Is send To Your Mobile Number');
             element.style.color = color;
         }
         else{
             alert('Please Enter Valied Mobile Number');
             element.style.color = 'red';
- 
-        } 
-    } 
+
+        }
+    }
 
     function VerifyOTP(element, color) {
         document.querySelector("#reg").disabled = false;
@@ -77,27 +77,48 @@
 
                 }
             );
-            
+
             element.style.color = color;
         }
         else{
             document.querySelector("#reg").disabled = true;
             alert('Please Enter Valied OTP');
             element.style.color = 'red';
- 
-        } 
-    } 
-    
+
+        }
+    }
+
+    // Function to generate a random 6-digit number
+        function generateRandomNumber() {
+            return Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+        }
+
+        // Function to generate and update the auto code
+        function generateAutoCode() {
+            let codePrefix = 'CS';
+            let randomCode = generateRandomNumber();
+
+            // Combine the prefix and random number
+            let fullCode = codePrefix + randomCode;
+
+            // Update the input field
+            document.getElementById('ucode').value = fullCode;
+        }
+
+        // Call the function on page load
+        window.onload = generateAutoCode;
 
 </script>
 </head>
-<body onload="enableBtn()">
+<!-- <body onload="enableBtn()"> -->
+<body>
    <p> {{error}} </p>
    <form action="/register" method="POST" onsubmit="return validate()" class="modal-content animate">
     <div class="container">
-    <h2 style = "color: forestgreen;margin-left: 35%;" >Registration Form</h2>    
+    <div class="logo"><a href="/"><img src="/static/images/logo_ltv.png"></a></div>
+    <h2 style = "color: forestgreen;margin-left: 35%;" >Registration Form</h2>
     <p>Ref Code : <input type="text" name="code" ></p>
-    <p>User Code : <input type="text" name="ucode" ></p>
+    <p>User Code : <input type="text" name="ucode" id="ucode"></p>
     <p>Email: <input type="text" name="email" id="email"></p>
     <P>Password: <input type="password" name="password" id="password" required></p>
     <p>Confirm Password: <input type="password" name="cpassword" id="cpassword"></p>
@@ -109,12 +130,13 @@
     <p>City: <input type="text" name="city"></p>
     <p>State: <input type="text" name="state"></p>
     <p>Country: <input type="text" name="country"></p>
-    <p>Phone Number: <input type="text" name="phone" id="phone" required ><input type="button" name="generate" onclick= "myFunction(this, 'Green')" value="Gen OTP"></p>
-    <p>Enter OTP:<input type="text" name="otp" id="otp" required><input type="button" name="verify" value="Verify" onclick= "VerifyOTP(this, 'Green')"></p>
-    <P><input type="submit" id="reg" value="REGISTER"></P>
+    <p>Phone Number: <input type="text" name="phone" id="phone" required ><!-- <input type="button" name="generate" onclick= "myFunction(this, 'Green')" value="Gen OTP"> --> </p>
+    <!-- <p>Enter OTP:<input type="text" name="otp" id="otp" required><input type="button" name="verify" value="Verify" onclick= "VerifyOTP(this, 'Green')"></p>
+    <P><input type="submit" id="reg" value="REGISTER"></P> -->
+    <button type="submit">REGISTER</button>
     Already User <a href="/loginForm">Login here</a>
     </div>
-    
+
 </form>
 </body>
 </html>
